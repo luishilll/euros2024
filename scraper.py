@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
+
 urls = ["https://fbref.com/en/comps/676/2021/schedule/2021-European-Championship-Scores-and-Fixtures"
     , "https://fbref.com/en/comps/676/2016/schedule/2016-European-Championship-Scores-and-Fixtures",
         "https://fbref.com/en/comps/676/2012/schedule/2012-European-Championship-Scores-and-Fixtures",
@@ -20,14 +21,14 @@ def get_data(url):
 
     headers = [header.text for header in rows[0].find_all("th") if header.text != "xG"]
 
+
     data = []
     for row in rows[1:]:
         cells = row.find_all('td')
-        data.append(
-            [cell.text for cell in cells])  # get data from each row td, starting from second row to not include headers
+        if not all(item == "" for item in [cell.text for cell in cells]):
+            data.append([cell.text for cell in cells])  # get data from each row td, starting from second row to not include headers
 
-
-    if url == "https://fbref.com/en/comps/676/2021/schedule/2021-European-Championship-Scores-and-Fixtures":
+    if url == "https://fbref.com/en/comps/676/2021/schedule/2021-European-Championship-Scores-and-Fixtures" or url == "https://fbref.com/en/comps/676/schedule/European-Championship-Scores-and-Fixtures":
         for row in data:
             row.pop(5)
             row.pop(6)
@@ -38,9 +39,15 @@ def get_data(url):
 
 
 dataframes = [get_data(url) for url in urls]
-for df in dataframes:
-    print(df.columns)
+
 
 main_table = pd.concat(dataframes, ignore_index=True)
+
+pred_url = "https://fbref.com/en/comps/676/schedule/European-Championship-Scores-and-Fixtures"
+
+pred = get_data(pred_url)
+
+pred.to_csv(r"C:\Users\luish\PycharmProjects\euros2024\euros2024\test_data.csv", index=False)
+
 
 main_table.to_csv(r"C:\Users\luish\PycharmProjects\euros2024\euros2024\data.csv", index=False)
