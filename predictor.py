@@ -24,9 +24,13 @@ predicting = create_predictors(predicting_csv, False)
 
 rf = RandomForestClassifier(n_estimators=50,min_samples_split=10, random_state=1)
 
+train = training[training["Date"] < '2016-07-11']
+
+test = training[training["Date"] > '2016-07-11']
+
 
 predictors = ["opp_code", "hour", "day_code"]
-rf.fit(training[predictors], training["result"])
+rf.fit(train[predictors], train["result"])
 
 preds = rf.predict(predicting[predictors])
 for row_index,result in enumerate(preds):
